@@ -47,7 +47,7 @@ from silver.TITULO T
 
 
 where date_diff('day',cast(cast(T.DATA_VENCIMENTO as timestamp) as date),current_date) > 0
-and t.CRC_CPG = 'R'
+and t.CRC_CPG = 'R' --R de recebimento e P de pagamento
 and ins.id = 7
 
 
