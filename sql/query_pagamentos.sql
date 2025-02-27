@@ -1,4 +1,4 @@
-SELECT sum(valor_titulo) from (
+SELECT * FROM (
 SELECT 
 'Segtruck' AS cooperativa,
 --cat.fantasia AS unidade,
@@ -11,7 +11,7 @@ tm.numero_boleto,
 tm.nosso_numero,
 tm.historico,
 (tm.valor_titulo_movimento+tm.valor_acrescimo-tm.valor_desconto) AS valor_titulo,
-CAST(CAST(tm.data_lancamento AS timestamp) AS date) AS data_lancamento, --pegar de TM para fazer a conferência
+CAST(CAST(tm.data_lancamento AS timestamp) AS date) AS data_pagamento, --pegar de TM para fazer a conferência
 CAST(CAST(tm.data_vencimento AS timestamp) AS date) AS data_vencimento,
 CAST(CAST(tm.data_emissao AS timestamp) AS date) AS data_emissao,
 date_diff('day',
@@ -45,10 +45,8 @@ LEFT JOIN silver.insurance_status ins ON ins.id=irs.id_status
 
 
 WHERE tm.crc_cpg = 'R'
-
 AND (tm.ponteiro_consolidado IS NULL OR tm.ponteiro_consolidado=0)
-AND tm.historico IN (3,4,8)
-AND CAST(CAST(tm.data_lancamento AS timestamp) AS date) BETWEEN DATE('2025-02-01') AND DATE('2025-02-26') 
+ 
 --não filtrar historico por código 1 para pegar apenas os baixados posteriormente (1 é lançados)
 --pegar historico 3,4 e 8 que são os pagos (visto por padrão)
 --não filtrar por ativo pq uma vez que ele é pago muda de ATIVO para outro status   
@@ -69,7 +67,7 @@ tm.numero_boleto,
 tm.nosso_numero,
 tm.historico,
 (tm.valor_titulo_movimento+tm.valor_acrescimo-tm.valor_desconto) AS valor_titulo,
-CAST(CAST(tm.data_lancamento AS timestamp) AS date) AS data_lancamento, --pegar de TM para fazer a conferência
+CAST(CAST(tm.data_lancamento AS timestamp) AS date) AS data_pagamento, --pegar de TM para fazer a conferência
 CAST(CAST(tm.data_vencimento AS timestamp) AS date) AS data_vencimento,
 CAST(CAST(tm.data_emissao AS timestamp) AS date) AS data_emissao,
 date_diff('day',
@@ -103,10 +101,8 @@ LEFT JOIN stcoop.insurance_status ins ON ins.id=irs.id_status
 
 
 WHERE tm.crc_cpg = 'R'
-
 AND (tm.ponteiro_consolidado IS NULL OR tm.ponteiro_consolidado=0)
-AND tm.historico IN (3,4,8)
-AND CAST(CAST(tm.data_lancamento AS timestamp) AS date) BETWEEN DATE('2025-02-01') AND DATE('2025-02-26') 
+ 
 --não filtrar historico por código 1 para pegar apenas os baixados posteriormente (1 é lançados)
 --pegar historico 3,4 e 8 que são os pagos (visto por padrão)
 --não filtrar por ativo pq uma vez que ele é pago muda de ATIVO para outro status   
@@ -127,7 +123,7 @@ tm.numero_boleto,
 tm.nosso_numero,
 tm.historico,
 (tm.valor_titulo_movimento+tm.valor_acrescimo-tm.valor_desconto) AS valor_titulo,
-CAST(CAST(tm.data_lancamento AS timestamp) AS date) AS data_lancamento, --pegar de TM para fazer a conferência
+CAST(CAST(tm.data_lancamento AS timestamp) AS date) AS data_pagamento, --pegar de TM para fazer a conferência
 CAST(CAST(tm.data_vencimento AS timestamp) AS date) AS data_vencimento,
 CAST(CAST(tm.data_emissao AS timestamp) AS date) AS data_emissao,
 date_diff('day',
@@ -161,11 +157,11 @@ LEFT JOIN viavante.insurance_status ins ON ins.id=irs.id_status
 
 
 WHERE tm.crc_cpg = 'R'
-
 AND (tm.ponteiro_consolidado IS NULL OR tm.ponteiro_consolidado=0)
-AND tm.historico IN (3,4,8)
-AND CAST(CAST(tm.data_lancamento AS timestamp) AS date) BETWEEN DATE('2025-02-01') AND DATE('2025-02-26') 
+ 
 --não filtrar historico por código 1 para pegar apenas os baixados posteriormente (1 é lançados)
 --pegar historico 3,4 e 8 que são os pagos (visto por padrão)
 --não filtrar por ativo pq uma vez que ele é pago muda de ATIVO para outro status   
 )
+
+ORDER BY data_pagamento DESC
