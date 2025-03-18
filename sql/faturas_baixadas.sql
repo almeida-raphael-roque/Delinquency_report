@@ -1,5 +1,3 @@
-SELECT SUM(valor_baixa) FROM (
-SELECT DISTINCT ponteiro, valor_baixa FROM(
 SELECT 
 'Segtruck' AS cooperativa,
 a.codigo AS aplicacao,
@@ -25,7 +23,9 @@ LEFT JOIN silver.catalogo cat ON cat.cnpj_cpf = r.cnpj_cpf--unidade cat
 
 LEFT JOIN silver.cliente cli ON cli.codigo = i.customer_id
 LEFT JOIN silver.catalogo cata ON cata.cnpj_cpf = cli.cnpj_cpf--cliente cata
-inner join silver.aplicacao_recurso_financeiro a on tm.codigo_aplicacao_recurso_fin = a.codigo and a.codigo_empresa = tm.codigo_empresa
+INNER JOIN silver.aplicacao_recurso_financeiro a ON tm.codigo_aplicacao_recurso_fin = a.codigo 
+AND a.codigo_empresa = tm.codigo_empresa
+AND a.codigo IN (166,1)
 
 INNER JOIN (
     SELECT 
@@ -72,7 +72,9 @@ LEFT JOIN stcoop.catalogo cat ON cat.cnpj_cpf = r.cnpj_cpf--unidade cat
 
 LEFT JOIN stcoop.cliente cli ON cli.codigo = i.customer_id
 LEFT JOIN stcoop.catalogo cata ON cata.cnpj_cpf = cli.cnpj_cpf--cliente cata
-inner join stcoop.aplicacao_recurso_financeiro a on tm.codigo_aplicacao_recurso_fin = a.codigo and a.codigo_empresa = tm.codigo_empresa
+INNER JOIN stcoop.aplicacao_recurso_financeiro a ON tm.codigo_aplicacao_recurso_fin = a.codigo 
+AND a.codigo_empresa = tm.codigo_empresa
+AND a.codigo IN (166,1)
 
 INNER JOIN (
     SELECT 
@@ -118,7 +120,9 @@ LEFT JOIN viavante.catalogo cat ON cat.cnpj_cpf = r.cnpj_cpf--unidade cat
 
 LEFT JOIN viavante.cliente cli ON cli.codigo = i.customer_id
 LEFT JOIN viavante.catalogo cata ON cata.cnpj_cpf = cli.cnpj_cpf--cliente cata
-inner join viavante.aplicacao_recurso_financeiro a on tm.codigo_aplicacao_recurso_fin = a.codigo and a.codigo_empresa = tm.codigo_empresa
+INNER JOIN viavante.aplicacao_recurso_financeiro a ON tm.codigo_aplicacao_recurso_fin = a.codigo 
+AND a.codigo_empresa = tm.codigo_empresa
+AND a.codigo IN (166,1)
 
 INNER JOIN (
     SELECT 
@@ -133,9 +137,6 @@ INNER JOIN (
     AND tb.crc_cpg = 'R'
     GROUP BY tb.ponteiro 
 ) bx ON bx.ponteiro = tm.ponteiro and a.taxa_comissao > 0 AND (tm.ponteiro_consolidado IS NULL OR tm.ponteiro_consolidado = 0)
-)
 
-WHERE data_baixa >= DATE('2024-02-27')
-AND data_baixa <= DATE('2025-02-27')
-AND aplicacao in(166,1)
-)
+
+
