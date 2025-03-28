@@ -19,7 +19,7 @@ class ETL_relat_pagam:
         df_pagamentos = df_pagamentos.drop_duplicates('ponteiro', keep='first')
         df_pagamentos = df_pagamentos[df_pagamentos['data_baixa']>= pd.to_datetime('2023-01-01').date()]
 
-        caminho_pasta = r'C:\Users\raphael.almeida\Grupo Unus\analise de dados - Arquivos em excel'
+        caminho_pasta = r'C:\Users\raphael.almeida\OneDrive - Grupo Unus\analise de dados - Arquivos em excel'
         caminho_arquivo = os.path.join(caminho_pasta,'relatorio_pagamentos.xlsx')
 
         #verificando a existência da pasta e removendo a versão antiga

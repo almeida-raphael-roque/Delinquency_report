@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import openpyxl
 
+
 class ETL_relat_inadimp:
 
     def ETL_inadimp():
@@ -17,7 +18,7 @@ class ETL_relat_inadimp:
         df_pagamentos = awr.athena.read_sql_query(query, database='silver')
 
 
-        caminho_pasta = r'C:\Users\raphael.almeida\Grupo Unus\analise de dados - Arquivos em excel'
+        caminho_pasta = r'C:\Users\raphael.almeida\OneDrive - Grupo Unus\analise de dados - Arquivos em excel'
         caminho_arquivo = os.path.join(caminho_pasta,'relatorio_inadimplencia.xlsx')
 
         #verificando a existência da pasta e removendo a versão antiga
@@ -30,6 +31,9 @@ class ETL_relat_inadimp:
         df_pagamentos.to_excel(caminho_arquivo, engine = 'openpyxl', index=False, sheet_name='inadimplentes')
 
         print(f"Arquivo Excel salvo com sucesso em: {caminho_arquivo}")
+
+if __name__ == '__main__':
+    ETL_relat_inadimp.ETL_inadimp()
 
 
                             
