@@ -33,7 +33,8 @@ class ETL_relat_pagam:
 
         print(f"Arquivo Excel salvo com sucesso em: {caminho_arquivo}")
 
-
+# if __name__ == '__main__':
+#     ETL_relat_pagam.ETL_pagam()
 
                             
                 

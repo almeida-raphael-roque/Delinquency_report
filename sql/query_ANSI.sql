@@ -1,3 +1,8 @@
+-- a base de títulos movimento mostra a movimentação de títulos, por isso é necessário fazer um join com a base de títulos (que não tem informações fato de movimentações financeiras)
+-- na titulos movimento tem tanto boletos baixados quanto boletos emitidos
+-- o historico 1 mostra boleto emitido, tanto é que não apresentam informações de baixa (valor de baixa = 0)
+-- obs: existem alguns ponteiros (boletos) consolidados, o que também não é o foco aqui
+
 select
 
 T.CODIGO_CADASTRO,
