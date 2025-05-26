@@ -3,7 +3,7 @@
 -- o historico 1 mostra boleto emitido, tanto é que não apresentam informações de baixa (valor de baixa = 0)
 -- obs: existem alguns ponteiros (boletos) consolidados, o que também não é o foco aqui
 
-select
+select distinct
 
 T.CODIGO_CADASTRO,
 CAT.NOME as ASSOCIADO,
@@ -22,7 +22,9 @@ T.NOSSO_NUMERO,
 ins.description AS STATUS,
 IFF.ID_SET,
 IFF.ID_REGISTRATION AS PARENT,
-'Segtruck' as COOPERATIVA
+'Segtruck' as COOPERATIVA,
+coalesce(iv.BOARD,it.BOARD,itt.BOARD) as "placa",
+coalesce(iv.chassi,it.chassi,itt.chassi) as "chassi"
 
 
 from silver.TITULO T
@@ -43,10 +45,20 @@ from silver.TITULO T
 	LEFT OUTER JOIN silver.INVOICE_ITEM I ON TM.ID_TITULO_MOVIMENTO = I.ID_TITLE_MOVIMENT
 	LEFT OUTER JOIN silver.INVOICE IFF ON I.PARENT = IFF.ID
 	LEFT OUTER JOIN silver.INSURANCE_REG_SET IR ON IR.ID = IFF.ID_SET
+	LEFT JOIN silver.insurance_status ins ON IR.id_status = ins.id
+	LEFT JOIN silver.insurance_reg_set_coverage irsc ON irsc.parent = IR.id
+	LEFT JOIN silver.insurance_reg_set_cov_trailer irsct ON irsct.parent = irsc.id
+	LEFT JOIN silver.insurance_vehicle iv ON iv.id = irsc.id_vehicle
+	LEFT JOIN silver.insurance_trailer it ON it.id = irsc.id_trailer
+	LEFT JOIN silver.insurance_trailer itt ON it.id = irsct.id_trailer
+	
+	
+
+
 	LEFT OUTER JOIN silver.VENDEDOR V ON V.CODIGO = IR.ID_CONSULTANT
 	LEFT JOIN silver.representante r ON r.codigo = iff.id_unity
 	LEFT JOIN silver.catalogo cata ON cata.cnpj_cpf = r.cnpj_cpf
-	LEFT JOIN insurance_status ins ON IR.id_status = ins.id
+	
 	
 
 
@@ -62,7 +74,7 @@ union all
 
 ------------------------------------------------------------------------
 
-select
+select distinct
 
 T.CODIGO_CADASTRO,
 CAT.NOME as ASSOCIADO,
@@ -81,7 +93,9 @@ T.NOSSO_NUMERO,
 ins.description AS STATUS,
 IFF.ID_SET,
 IFF.ID_REGISTRATION AS PARENT,
-'Stcoop' as COOPERATIVA
+'Stcoop' as COOPERATIVA,
+coalesce(iv.BOARD,it.BOARD,itt.BOARD) as "placa",
+coalesce(iv.chassi,it.chassi,itt.chassi) as "chassi"
 
 
 from stcoop.TITULO T
@@ -101,7 +115,14 @@ from stcoop.TITULO T
 	LEFT OUTER JOIN stcoop.VENDEDOR V ON V.CODIGO = IR.ID_CONSULTANT
 	LEFT JOIN stcoop.representante r ON r.codigo = iff.id_unity
 	LEFT JOIN stcoop.catalogo cata ON cata.cnpj_cpf = r.cnpj_cpf
-	LEFT JOIN insurance_status ins ON IR.id_status = ins.id
+	LEFT JOIN stcoop.insurance_status ins ON IR.id_status = ins.id
+
+	LEFT JOIN stcoop.insurance_reg_set_coverage irsc ON irsc.parent = IR.id
+	LEFT JOIN stcoop.insurance_reg_set_cov_trailer irsct ON irsct.parent = irsc.id
+	LEFT JOIN stcoop.insurance_vehicle iv ON iv.id = irsc.id_vehicle
+	LEFT JOIN stcoop.insurance_trailer it ON it.id = irsc.id_trailer
+	LEFT JOIN stcoop.insurance_trailer itt ON it.id = irsct.id_trailer
+	
 
 
 where date_diff('day',cast(cast(T.DATA_VENCIMENTO as timestamp) as date),current_date) > 0
@@ -116,7 +137,7 @@ union all
 ------------------------------------------------------------------------
 
 
-select
+select distinct
 
 T.CODIGO_CADASTRO,
 CAT.NOME as ASSOCIADO,
@@ -135,7 +156,9 @@ T.NOSSO_NUMERO,
 ins.description AS STATUS,
 IFF.ID_SET,
 IFF.ID_REGISTRATION AS PARENT,
-'Viavante' as COOPERATIVA
+'Viavante' as COOPERATIVA,
+coalesce(iv.BOARD,it.BOARD,itt.BOARD) as "placa",
+coalesce(iv.chassi,it.chassi,itt.chassi) as "chassi"
 
 
 from viavante.TITULO T
@@ -158,8 +181,13 @@ from viavante.TITULO T
 	LEFT OUTER JOIN viavante.VENDEDOR V ON V.CODIGO = IR.ID_CONSULTANT
 	LEFT JOIN viavante.representante r ON r.codigo = iff.id_unity
 	LEFT JOIN viavante.catalogo cata ON cata.cnpj_cpf = r.cnpj_cpf
-	LEFT JOIN insurance_status ins ON IR.id_status = ins.id
-
+	LEFT JOIN viavante.insurance_status ins ON IR.id_status = ins.id
+	
+	LEFT JOIN viavante.insurance_reg_set_coverage irsc ON irsc.parent = IR.id
+	LEFT JOIN viavante.insurance_reg_set_cov_trailer irsct ON irsct.parent = irsc.id
+	LEFT JOIN viavante.insurance_vehicle iv ON iv.id = irsc.id_vehicle
+	LEFT JOIN viavante.insurance_trailer it ON it.id = irsc.id_trailer
+	LEFT JOIN viavante.insurance_trailer itt ON it.id = irsct.id_trailer
 
 where date_diff('day',cast(cast(T.DATA_VENCIMENTO as timestamp) as date),current_date) > 0
 and t.CRC_CPG = 'R'
