@@ -8,7 +8,7 @@ class ETL_relat_inadimp:
 
     def ETL_inadimp():
         
-        caminho_query = r"C:\Users\raphael.almeida\Documents\Processos\relatorio_inadimplencia\sql\query_ANSI.sql"
+        caminho_query = r"C:\Users\raphael.almeida\Documents\Processos\relatorio_inadimplencia\sql\faturas_inadimplentes.sql"
 
         #realizando a leitura da query
         with open(caminho_query,'r') as arquivo_query:
