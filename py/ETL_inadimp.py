@@ -27,7 +27,7 @@ class ETL_relat_inadimp:
         df_validacao = df_inadimp[~df_inadimp['chassi'].isin(chassis_cancel)]
 
         
-        caminho_pasta = r'C:\Users\raphael.almeida\OneDrive - Grupo Unus\analise de dados - Arquivos em excel'
+        caminho_pasta = r'C:\Users\raphael.almeida\OneDrive - Grupo Unus\analise de dados - Arquivos em excel\Relatório de Inadimplência'
         caminho_arquivo = os.path.join(caminho_pasta,'relatorio_inadimplencia.xlsx')
 
         #verificando a existência da pasta e removendo a versão antiga

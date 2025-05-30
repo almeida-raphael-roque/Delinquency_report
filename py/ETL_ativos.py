@@ -17,7 +17,7 @@ class ETL_relat_ativos:
         df_ativos = awr.athena.read_sql_query(query, database='silver')
 
 
-        caminho_pasta = r'C:\Users\raphael.almeida\OneDrive - Grupo Unus\analise de dados - Arquivos em excel'
+        caminho_pasta = r'C:\Users\raphael.almeida\OneDrive - Grupo Unus\analise de dados - Arquivos em excel\Relatório de Inadimplência'
         caminho_arquivo = os.path.join(caminho_pasta,'conjuntos_clientes_ativos.xlsx')
 
         #verificando a existência da pasta e removendo a versão antiga
