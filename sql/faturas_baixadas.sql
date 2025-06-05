@@ -2,6 +2,8 @@ SELECT
 'Segtruck' AS cooperativa,
 a.codigo AS aplicacao,
 tm.ponteiro,
+tm.numero_boleto,
+tm.nosso_numero,
 irs.parent AS matricula,
 irs.id AS conjunto,
 cat.fantasia AS unidade,
@@ -12,6 +14,7 @@ CAST(tm.data_vencimento AS date) AS data_vencimento,
 DATE_DIFF('day', CAST(bx.data_baixa AS date), CAST(tm.data_vencimento AS date)) AS dias_atraso
 
 FROM silver.titulo_movimento tm
+LEFT JOIN silver.titulo t ON t.ponteiro = tm.ponteiro
 INNER JOIN silver.titulo_comissao tc on tm.id_titulo_movimento = tc.id_titulo_movimento 
 LEFT JOIN silver.invoice_item ii ON ii.id_title_moviment = tm.id_titulo_movimento
 LEFT JOIN silver.invoice i ON i.id = ii.parent
@@ -51,6 +54,8 @@ SELECT
 'Stcoop' AS cooperativa,
 a.codigo AS aplicacao,
 tm.ponteiro,
+tm.numero_boleto,
+tm.nosso_numero,
 irs.parent AS matricula,
 irs.id AS conjunto,
 cat.fantasia AS unidade,
@@ -61,6 +66,7 @@ CAST(tm.data_vencimento AS date) AS data_vencimento,
 DATE_DIFF('day', CAST(bx.data_baixa AS date), CAST(tm.data_vencimento AS date)) AS dias_atraso
 
 FROM stcoop.titulo_movimento tm
+LEFT JOIN stcoop.titulo t ON t.ponteiro = tm.ponteiro
 INNER JOIN stcoop.titulo_comissao tc on tm.id_titulo_movimento = tc.id_titulo_movimento 
 LEFT JOIN stcoop.invoice_item ii ON ii.id_title_moviment = tm.id_titulo_movimento
 LEFT JOIN stcoop.invoice i ON i.id = ii.parent
@@ -99,6 +105,8 @@ SELECT
 'Viavante' AS cooperativa,
 a.codigo AS aplicacao,
 tm.ponteiro,
+tm.numero_boleto,
+tm.nosso_numero,
 irs.parent AS matricula,
 irs.id AS conjunto,
 cat.fantasia AS unidade,
@@ -109,6 +117,7 @@ CAST(tm.data_vencimento AS date) AS data_vencimento,
 DATE_DIFF('day', CAST(bx.data_baixa AS date), CAST(tm.data_vencimento AS date)) AS dias_atraso
 
 FROM viavante.titulo_movimento tm
+LEFT JOIN viavante.titulo t ON t.ponteiro = tm.ponteiro
 INNER JOIN viavante.titulo_comissao tc on tm.id_titulo_movimento = tc.id_titulo_movimento 
 LEFT JOIN viavante.invoice_item ii ON ii.id_title_moviment = tm.id_titulo_movimento
 LEFT JOIN viavante.invoice i ON i.id = ii.parent

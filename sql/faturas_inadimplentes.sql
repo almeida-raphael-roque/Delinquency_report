@@ -8,6 +8,8 @@ select distinct
 T.CODIGO_CADASTRO,
 CAT.NOME as ASSOCIADO,
 G.DESCRICAO as GRUPO,
+ireg.id AS matricula,
+IR.id AS conjunto,
 A.DESCRICAO AS APLICACAO_FINANCEIRA,
 cast(cast(T.DATA_EMISSAO as timestamp) as date) as DATA_EMISSAO,-- 2 casts necessários para rodar no ANSI SQL 
 cast(cast(T.DATA_VENCIMENTO as timestamp) as date) as DATA_VENCIMENTO, 
@@ -16,9 +18,9 @@ V.CODIGO,
 coalesce(V.DESCRICAO,'OUTROS') as DESCRICAO,
 cata.fantasia as UNIDADE,
 date_diff('day',cast(cast(T.DATA_VENCIMENTO as timestamp) as date), current_date) as DIAS_ATRASADO,  
-T.PONTEIRO,
-T.NUMERO_BOLETO,
-T.NOSSO_NUMERO,
+TM.PONTEIRO,
+TM.numero_boleto,
+TM.nosso_numero,
 ins.description AS STATUS,
 IFF.ID_SET,
 IFF.ID_REGISTRATION AS PARENT,
@@ -45,6 +47,7 @@ from silver.TITULO T
 	LEFT OUTER JOIN silver.INVOICE_ITEM I ON TM.ID_TITULO_MOVIMENTO = I.ID_TITLE_MOVIMENT
 	LEFT OUTER JOIN silver.INVOICE IFF ON I.PARENT = IFF.ID
 	LEFT OUTER JOIN silver.INSURANCE_REG_SET IR ON IR.ID = IFF.ID_SET
+	LEFT JOIN silver.insurance_registration ireg ON ireg.id = IR.parent
 	LEFT JOIN silver.insurance_status ins ON IR.id_status = ins.id
 	LEFT JOIN silver.insurance_reg_set_coverage irsc ON irsc.parent = IR.id
 	LEFT JOIN silver.insurance_reg_set_cov_trailer irsct ON irsct.parent = irsc.id
@@ -79,6 +82,8 @@ select distinct
 T.CODIGO_CADASTRO,
 CAT.NOME as ASSOCIADO,
 G.DESCRICAO as GRUPO,
+ireg.id AS matricula,
+IR.id AS conjunto,
 A.DESCRICAO AS APLICACAO_FINANCEIRA,
 cast(cast(T.DATA_EMISSAO as timestamp) as date) as DATA_EMISSAO,-- 2 casts necessários para rodar no ANSI SQL 
 cast(cast(T.DATA_VENCIMENTO as timestamp) as date) as DATA_VENCIMENTO, 
@@ -87,9 +92,9 @@ V.CODIGO,
 coalesce(V.DESCRICAO,'OUTROS') as DESCRICAO,
 cata.fantasia as UNIDADE,
 date_diff('day',cast(cast(T.DATA_VENCIMENTO as timestamp) as date), current_date) as DIAS_ATRASADO,  
-T.PONTEIRO,
-T.NUMERO_BOLETO,
-T.NOSSO_NUMERO,
+TM.PONTEIRO,
+TM.numero_boleto,
+TM.nosso_numero,
 ins.description AS STATUS,
 IFF.ID_SET,
 IFF.ID_REGISTRATION AS PARENT,
@@ -112,6 +117,7 @@ from stcoop.TITULO T
 	LEFT OUTER JOIN stcoop.INVOICE_ITEM I ON TM.ID_TITULO_MOVIMENTO = I.ID_TITLE_MOVIMENT
 	LEFT OUTER JOIN stcoop.INVOICE IFF ON I.PARENT = IFF.ID
 	LEFT OUTER JOIN stcoop.INSURANCE_REG_SET IR ON IR.ID = IFF.ID_SET
+	LEFT JOIN stcoop.insurance_registration ireg ON ireg.id = IR.parent
 	LEFT OUTER JOIN stcoop.VENDEDOR V ON V.CODIGO = IR.ID_CONSULTANT
 	LEFT JOIN stcoop.representante r ON r.codigo = iff.id_unity
 	LEFT JOIN stcoop.catalogo cata ON cata.cnpj_cpf = r.cnpj_cpf
@@ -142,6 +148,8 @@ select distinct
 T.CODIGO_CADASTRO,
 CAT.NOME as ASSOCIADO,
 G.DESCRICAO as GRUPO,
+ireg.id AS matricula,
+IR.id AS conjunto,
 A.DESCRICAO AS APLICACAO_FINANCEIRA,
 cast(cast(T.DATA_EMISSAO as timestamp) as date) as DATA_EMISSAO,-- 2 casts necessários para rodar no ANSI SQL 
 cast(cast(T.DATA_VENCIMENTO as timestamp) as date) as DATA_VENCIMENTO, 
@@ -150,9 +158,9 @@ V.CODIGO,
 coalesce(V.DESCRICAO,'OUTROS') as DESCRICAO,
 cata.fantasia as UNIDADE,
 date_diff('day',cast(cast(T.DATA_VENCIMENTO as timestamp) as date), current_date) as DIAS_ATRASADO,  
-T.PONTEIRO,
-T.NUMERO_BOLETO,
-T.NOSSO_NUMERO,
+TM.PONTEIRO,
+TM.numero_boleto,
+TM.nosso_numero,
 ins.description AS STATUS,
 IFF.ID_SET,
 IFF.ID_REGISTRATION AS PARENT,
@@ -178,6 +186,7 @@ from viavante.TITULO T
 	LEFT OUTER JOIN viavante.INVOICE IFF ON I.PARENT = IFF.ID
 
 	LEFT OUTER JOIN viavante.INSURANCE_REG_SET IR ON IR.ID = IFF.ID_SET
+	LEFT JOIN viavante.insurance_registration ireg ON ireg.id = IR.parent
 	LEFT OUTER JOIN viavante.VENDEDOR V ON V.CODIGO = IR.ID_CONSULTANT
 	LEFT JOIN viavante.representante r ON r.codigo = iff.id_unity
 	LEFT JOIN viavante.catalogo cata ON cata.cnpj_cpf = r.cnpj_cpf
