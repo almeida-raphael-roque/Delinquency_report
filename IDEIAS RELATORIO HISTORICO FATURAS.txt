@@ -1,0 +1,5 @@
+IDEIAS RELATORIO HISTORICO FATURAS
+
+se o normal é ficar no máximo 30 dias, uma ideia é retirar essas faturas do relatório, (para representar melhor a realidade)
+
+se durante esse mês não forem filtrados pagamentos com o mesmo ponteiro é pq o ponteiro muda quando se paga, achar identificador
