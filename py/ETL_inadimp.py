@@ -16,15 +16,34 @@ class ETL_relat_inadimp:
 
         #transformando em dataframe (pandas) e executando a consulta no athena 
         df_inadimp = awr.athena.read_sql_query(query, database='silver')
-        df_inadimp = df_inadimp.drop_duplicates('ponteiro', keep='first')
+
+        #ponteiros cujo historico é diferente de 1
+        lista_boletos_pagos = df_inadimp.loc[df_inadimp['historico'] != 1, ['ponteiro','conjunto','matricula']]
+
+        # Gerando um index para comparação de séries
+        df_inadimp = df_inadimp.set_index(['ponteiro', 'conjunto', 'matricula'])
+        lista_boletos_pagos = lista_boletos_pagos.set_index(['ponteiro', 'conjunto', 'matricula'])
+
+        # Comparando os index e filtrando
+        df_inadimp = df_inadimp[~df_inadimp.index.isin(lista_boletos_pagos.index)]
+
+        # Resetando o index para manter o padrão do restante do código
+        df_inadimp = df_inadimp.reset_index()
+
+        #filtrando com status de a pagar
+        df_inadimp = df_inadimp[df_inadimp['historico']==1]
+        
+        
+        df_inadimp = df_inadimp.drop_duplicates(subset=['ponteiro', 'conjunto', 'matricula', 'empresa'], keep='first')
+        
 
         #fazendo validação com placas (chassis) canceladas
-        cancel_path = r"C:\Users\raphael.almeida\Grupo Unus\analise de dados - Arquivos em excel\CAMPANHA_RANKING_ATIVACOES.xlsx"
-        df_cancel = pd.read_excel(cancel_path, engine='openpyxl', sheet_name='CANCELAMENTOS')
+        # cancel_path = r"C:\Users\raphael.almeida\Grupo Unus\analise de dados - Arquivos em excel\CAMPANHA_RANKING_ATIVACOES.xlsx"
+        # df_cancel = pd.read_excel(cancel_path, engine='openpyxl', sheet_name='CANCELAMENTOS')
 
-        chassis_cancel = df_cancel['chassi'].unique()
+        # chassis_cancel = df_cancel['chassi'].unique()
 
-        df_validacao = df_inadimp[~df_inadimp['chassi'].isin(chassis_cancel)]
+        # df_validacao = df_inadimp[~df_inadimp['chassi'].isin(chassis_cancel)]
 
         
         caminho_pasta = r'C:\Users\raphael.almeida\OneDrive - Grupo Unus\analise de dados - Arquivos em excel\Relatório de Inadimplência'
@@ -37,7 +56,7 @@ class ETL_relat_inadimp:
             print("Arquivo antigo removido, iniciando carregamento...")
 
         #convertendo o dataframe em excel e associando ao caminho da pasta
-        df_validacao.to_excel(caminho_arquivo, engine = 'openpyxl', index=False, sheet_name='inadimplentes')
+        df_inadimp.to_excel(caminho_arquivo, engine = 'openpyxl', index=False, sheet_name='inadimplentes')
 
         print(f"Arquivo Excel salvo com sucesso em: {caminho_arquivo}")
 

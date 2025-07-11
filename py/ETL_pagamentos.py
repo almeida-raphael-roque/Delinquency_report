@@ -6,7 +6,26 @@ import openpyxl
 class ETL_relat_pagam:
 
     def ETL_pagam():
-        
+
+        #retomando ponteiros inadimplentes para posterior filtragem
+
+        caminho_query = r"C:\Users\raphael.almeida\Documents\Processos\relatorio_inadimplencia\sql\faturas_inadimplentes.sql"
+
+        #realizando a leitura da query
+        with open(caminho_query,'r') as arquivo_query:
+            query = arquivo_query.read()
+
+        #transformando em dataframe (pandas) e executando a consulta no athena 
+        df_inadimp = awr.athena.read_sql_query(query, database='silver')
+
+        df_inadimp = df_inadimp.drop_duplicates('ponteiro', keep='first') #se tiver ponteiro repetido entre as empresas ele vai desconsiderar, mudar parâmetro   
+
+        #criando lista de ponteiros inadimplentes para posterior filtragem
+
+        ponteiros_inadimp = df_inadimp['ponteiro'].to_list()
+
+
+
         caminho_query = r"C:\Users\raphael.almeida\Documents\Processos\relatorio_inadimplencia\sql\faturas_baixadas.sql"
 
         #realizando a leitura da query
@@ -17,7 +36,10 @@ class ETL_relat_pagam:
         df_pagamentos = awr.athena.read_sql_query(query, database='silver')
 
         df_pagamentos = df_pagamentos.drop_duplicates('ponteiro', keep='first')
-        df_pagamentos = df_pagamentos[df_pagamentos['data_baixa']>= pd.to_datetime('2023-01-01').date()]
+        #df_pagamentos = df_pagamentos[df_pagamentos['data_baixa']>= pd.to_datetime('2023-01-01').date()]
+
+        #filtrando df_pagamentos para ponteiros inadimp
+        df_pagamentos = df_pagamentos[df_pagamentos['ponteiro'].isin(ponteiros_inadimp)]
 
         caminho_pasta = r'C:\Users\raphael.almeida\OneDrive - Grupo Unus\analise de dados - Arquivos em excel\Relatório de Inadimplência'
         caminho_arquivo = os.path.join(caminho_pasta,'relatorio_pagamentos.xlsx')
