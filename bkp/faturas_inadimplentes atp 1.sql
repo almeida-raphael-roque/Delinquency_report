@@ -50,6 +50,20 @@ AND CAST(CAST(tm.data_emissao AS TIMESTAMP) AS DATE) >= date_add('year',-1,curre
 AND tm.crc_cpg = 'R'
 AND DATE_DIFF('day', CAST(tm.data_vencimento AS DATE), current_date) > 0 
 
+-- SELECIONANDO APENAS OS PONTEIROS QUE NÃO SE REPETEM, SENÃO QUER DIZER QUE FORAM PAGOS (VALIDADO NO ATHENA)
+AND (tm.ponteiro, i.id_set, i.id_registration) IN (
+    SELECT 
+        tm.ponteiro, 
+        i.id_set, 
+        i.id_registration
+    FROM silver.titulo_movimento tm
+    LEFT JOIN silver.invoice_item ii ON tm.id_titulo_movimento = ii.id_title_moviment
+    LEFT JOIN silver.invoice i ON ii.parent = i.id
+    GROUP BY tm.ponteiro, i.id_set, i.id_registration
+    HAVING COUNT(tm.ponteiro) = 1
+)
+
+
 ---------------------------------------------------------------------------------------
 UNION ALL
 ---------------------------------------------------------------------------------------
@@ -103,6 +117,20 @@ WHERE (tm.ponteiro_consolidado IS NULL OR tm.ponteiro_consolidado= 0)
 AND CAST(CAST(tm.data_emissao AS TIMESTAMP) AS DATE) >= date_add('year',-1,current_date)
 AND tm.crc_cpg = 'R'
 AND DATE_DIFF('day', CAST(tm.data_vencimento AS DATE), current_date) > 0 
+
+-- SELECIONANDO APENAS OS PONTEIROS QUE NÃO SE REPETEM, SENÃO QUER DIZER QUE FORAM PAGOS
+AND (tm.ponteiro, i.id_set, i.id_registration) IN (
+    SELECT 
+        tm.ponteiro, 
+        i.id_set, 
+        i.id_registration
+    FROM stcoop.titulo_movimento tm
+    LEFT JOIN stcoop.invoice_item ii ON tm.id_titulo_movimento = ii.id_title_moviment
+    LEFT JOIN stcoop.invoice i ON ii.parent = i.id
+    GROUP BY tm.ponteiro, i.id_set, i.id_registration
+    HAVING COUNT(tm.ponteiro) = 1
+)
+
 
 ---------------------------------------------------------------------------------------
 UNION ALL
@@ -158,3 +186,15 @@ AND CAST(CAST(tm.data_emissao AS TIMESTAMP) AS DATE) >= date_add('year',-1,curre
 AND tm.crc_cpg = 'R'
 AND DATE_DIFF('day', CAST(tm.data_vencimento AS DATE), current_date) > 0 
 
+-- SELECIONANDO APENAS OS PONTEIROS QUE NÃO SE REPETEM, SENÃO QUER DIZER QUE FORAM PAGOS
+AND (tm.ponteiro, i.id_set, i.id_registration) IN (
+    SELECT 
+        tm.ponteiro, 
+        i.id_set, 
+        i.id_registration
+    FROM viavante.titulo_movimento tm
+    LEFT JOIN viavante.invoice_item ii ON tm.id_titulo_movimento = ii.id_title_moviment
+    LEFT JOIN viavante.invoice i ON ii.parent = i.id
+    GROUP BY tm.ponteiro, i.id_set, i.id_registration
+    HAVING COUNT(tm.ponteiro) = 1
+)

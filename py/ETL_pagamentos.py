@@ -7,23 +7,9 @@ class ETL_relat_pagam:
 
     def ETL_pagam():
 
-        #retomando ponteiros inadimplentes para posterior filtragem
-
-        caminho_query = r"C:\Users\raphael.almeida\Documents\Processos\relatorio_inadimplencia\sql\faturas_inadimplentes.sql"
-
-        #realizando a leitura da query
-        with open(caminho_query,'r') as arquivo_query:
-            query = arquivo_query.read()
-
-        #transformando em dataframe (pandas) e executando a consulta no athena 
-        df_inadimp = awr.athena.read_sql_query(query, database='silver')
-
-        df_inadimp = df_inadimp.drop_duplicates('ponteiro', keep='first') #se tiver ponteiro repetido entre as empresas ele vai desconsiderar, mudar parâmetro   
-
-        #criando lista de ponteiros inadimplentes para posterior filtragem
-
-        ponteiros_inadimp = df_inadimp['ponteiro'].to_list()
-
+        xlsx_path = r"C:\Users\raphael.almeida\OneDrive - Grupo Unus\analise de dados - Arquivos em excel\Relatório de Inadimplência\relatorio_pagamentos.xlsx"
+        df_inadimp = pd.read_excel(xlsx_path,engine = 'openpyxl')
+        ponteiros_inadimp = df_inadimp['ponteiro'].tolist()
 
 
         caminho_query = r"C:\Users\raphael.almeida\Documents\Processos\relatorio_inadimplencia\sql\faturas_baixadas.sql"
