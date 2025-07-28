@@ -7,10 +7,9 @@ class ETL_relat_pagam:
 
     def ETL_pagam():
 
-        xlsx_path = r"C:\Users\raphael.almeida\OneDrive - Grupo Unus\analise de dados - Arquivos em excel\Relatório de Inadimplência\relatorio_pagamentos.xlsx"
-        df_inadimp = pd.read_excel(xlsx_path,engine = 'openpyxl')
-        ponteiros_inadimp = df_inadimp['ponteiro'].tolist()
-
+        ## xlsx_path = r"C:\Users\raphael.almeida\OneDrive - Grupo Unus\analise de dados - Arquivos em excel\Relatório de Inadimplência\relatorio_pagamentos.xlsx"
+        ## df_inadimp = pd.read_excel(xlsx_path,engine = 'openpyxl')
+        ## ponteiros_inadimp = df_inadimp['ponteiro'].tolist()
 
         caminho_query = r"C:\Users\raphael.almeida\Documents\Processos\relatorio_inadimplencia\sql\faturas_baixadas.sql"
 
@@ -21,11 +20,11 @@ class ETL_relat_pagam:
         #transformando em dataframe (pandas) e executando a consulta no athena 
         df_pagamentos = awr.athena.read_sql_query(query, database='silver')
 
-        df_pagamentos = df_pagamentos.drop_duplicates('ponteiro', keep='first')
+        df_pagamentos = df_pagamentos.drop_duplicates(subset=['ponteiro', 'conjunto', 'matricula', 'empresa'], keep='first')
         #df_pagamentos = df_pagamentos[df_pagamentos['data_baixa']>= pd.to_datetime('2023-01-01').date()]
 
         #filtrando df_pagamentos para ponteiros inadimp
-        df_pagamentos = df_pagamentos[df_pagamentos['ponteiro'].isin(ponteiros_inadimp)]
+        ##df_pagamentos = df_pagamentos[df_pagamentos['ponteiro'].isin(ponteiros_inadimp)]
 
         caminho_pasta = r'C:\Users\raphael.almeida\OneDrive - Grupo Unus\analise de dados - Arquivos em excel\Relatório de Inadimplência'
         caminho_arquivo = os.path.join(caminho_pasta,'relatorio_pagamentos.xlsx')

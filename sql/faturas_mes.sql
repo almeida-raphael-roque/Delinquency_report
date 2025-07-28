@@ -49,6 +49,7 @@ WHERE (tm.ponteiro_consolidado IS NULL OR tm.ponteiro_consolidado= 0)
 AND CAST(CAST(tm.data_emissao AS TIMESTAMP) AS DATE) >= date_add('year',-1,current_date)
 AND tm.crc_cpg = 'R'
 AND tm.historico = 1
+AND ins.description LIKE 'ATIVA'
 
 
 
@@ -105,6 +106,7 @@ WHERE (tm.ponteiro_consolidado IS NULL OR tm.ponteiro_consolidado= 0)
 AND CAST(CAST(tm.data_emissao AS TIMESTAMP) AS DATE) >= date_add('year',-1,current_date)
 AND tm.crc_cpg = 'R'
 AND tm.historico = 1
+AND ins.description LIKE 'ATIVA'
 
 
 
@@ -161,6 +163,7 @@ WHERE (tm.ponteiro_consolidado IS NULL OR tm.ponteiro_consolidado= 0)
 AND CAST(CAST(tm.data_emissao AS TIMESTAMP) AS DATE) >= date_add('year',-1,current_date)
 AND tm.crc_cpg = 'R'
 AND tm.historico = 1
+AND ins.description LIKE 'ATIVA'
 
 
 

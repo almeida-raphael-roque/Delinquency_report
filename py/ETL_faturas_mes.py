@@ -12,6 +12,8 @@ class ETL_relat_mes:
             query = arquivo_query.read()
         df_mes = awr.athena.read_sql_query(query, database='silver')
 
+        df_mes.drop_duplicates(subset='ponteiro', inplace=True)
+
         caminho_pasta = r'C:\Users\raphael.almeida\OneDrive - Grupo Unus\analise de dados - Arquivos em excel\Relatório de Inadimplência'
         caminho_arquivo = os.path.join(caminho_pasta,'relatorio_faturas_mes.xlsx')
         os.makedirs(caminho_pasta,exist_ok=True)

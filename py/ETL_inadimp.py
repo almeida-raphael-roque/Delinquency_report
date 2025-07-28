@@ -7,7 +7,7 @@ import openpyxl
 class ETL_relat_inadimp:
 
     def ETL_inadimp():
-        caminho_query = r"C:\Users\raphael.almeida\Documents\Processos\relatorio_inadimplencia\sql\faturas_inadimplentes.sql"
+        caminho_query = r"C:\Users\raphael.almeida\Documents\Processos\relatorio_inadimplencia\sql\faturas.sql"
         with open(caminho_query,'r') as arquivo_query:
             query = arquivo_query.read()
         df_inadimp = awr.athena.read_sql_query(query, database='silver')

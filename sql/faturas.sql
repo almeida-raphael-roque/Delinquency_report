@@ -49,6 +49,7 @@ WHERE (tm.ponteiro_consolidado IS NULL OR tm.ponteiro_consolidado= 0)
 AND CAST(CAST(tm.data_emissao AS TIMESTAMP) AS DATE) >= date_add('year',-1,current_date)
 AND tm.crc_cpg = 'R'
 AND DATE_DIFF('day', CAST(tm.data_vencimento AS DATE), current_date) > 0 
+AND i.id_set IS NOT NULL --apenas ponteiros associados a conjuntos (validado pelos resultados de realizado do setor orçamentário)
 
 ---------------------------------------------------------------------------------------
 UNION ALL
@@ -103,6 +104,7 @@ WHERE (tm.ponteiro_consolidado IS NULL OR tm.ponteiro_consolidado= 0)
 AND CAST(CAST(tm.data_emissao AS TIMESTAMP) AS DATE) >= date_add('year',-1,current_date)
 AND tm.crc_cpg = 'R'
 AND DATE_DIFF('day', CAST(tm.data_vencimento AS DATE), current_date) > 0 
+AND i.id_set IS NOT NULL --apenas ponteiros associados a conjuntos (validado pelos resultados de realizado do setor orçamentário)
 
 ---------------------------------------------------------------------------------------
 UNION ALL
@@ -157,4 +159,5 @@ WHERE (tm.ponteiro_consolidado IS NULL OR tm.ponteiro_consolidado= 0)
 AND CAST(CAST(tm.data_emissao AS TIMESTAMP) AS DATE) >= date_add('year',-1,current_date)
 AND tm.crc_cpg = 'R'
 AND DATE_DIFF('day', CAST(tm.data_vencimento AS DATE), current_date) > 0 
+AND i.id_set IS NOT NULL --apenas ponteiros associados a conjuntos (validado pelos resultados de realizado do setor orçamentário)
 
