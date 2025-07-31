@@ -59,7 +59,6 @@ INNER JOIN (
 ) bx ON bx.ponteiro = tm.ponteiro and a.taxa_comissao > 0 AND (tm.ponteiro_consolidado IS NULL OR tm.ponteiro_consolidado = 0)
 	
 WHERE CAST(CAST(tm.data_emissao AS TIMESTAMP) AS DATE) >= date_add('year',-1,current_date)
-AND i.id_set IS NOT NULL -- o relatório deve puxar apenas ponteiros que estekam associados a conjuntos (validado por conferência com o resultado realizado do setor orçamentário) 
 
 
 
@@ -128,7 +127,6 @@ INNER JOIN (
 ) bx ON bx.ponteiro = tm.ponteiro and a.taxa_comissao > 0 AND (tm.ponteiro_consolidado IS NULL OR tm.ponteiro_consolidado = 0)
 	
 WHERE CAST(CAST(tm.data_emissao AS TIMESTAMP) AS DATE) >= date_add('year',-1,current_date)
-AND i.id_set IS NOT NULL -- o relatório deve puxar apenas ponteiros que estekam associados a conjuntos (validado por conferência com o resultado realizado do setor orçamentário) 
 
 
 
@@ -197,6 +195,5 @@ INNER JOIN (
 ) bx ON bx.ponteiro = tm.ponteiro and a.taxa_comissao > 0 AND (tm.ponteiro_consolidado IS NULL OR tm.ponteiro_consolidado = 0)
 	
 WHERE CAST(CAST(tm.data_emissao AS TIMESTAMP) AS DATE) >= date_add('year',-1,current_date)
-AND i.id_set IS NOT NULL -- o relatório deve puxar apenas ponteiros que estekam associados a conjuntos (validado por conferência com o resultado realizado do setor orçamentário) 
 
 
