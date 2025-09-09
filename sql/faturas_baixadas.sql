@@ -196,4 +196,71 @@ INNER JOIN (
 	
 WHERE CAST(CAST(tm.data_emissao AS TIMESTAMP) AS DATE) >= date_add('year',-1,current_date)
 
+---------------------------------------------------------------------------------------
+UNION ALL
+---------------------------------------------------------------------------------------
+
+SELECT DISTINCT
+
+tm.codigo_cadastro,
+tm.ponteiro,
+tm.numero_documento,
+tm.numero_boleto,
+tm.nosso_numero,
+tm.sequencia_documento,
+a.descricao AS aplicacao_financeira,
+(tm.valor_titulo_movimento + tm.valor_acrescimo - tm.valor_desconto) AS valor_titulo,
+bx.valor_baixa, --
+CAST(CAST(tm.data_emissao AS TIMESTAMP) AS DATE) AS data_emissao,
+CAST(bx.data_baixa AS date) AS data_baixa,--
+CAST(CAST(tm.data_vencimento AS TIMESTAMP) AS DATE) AS data_vencimento, 
+i.id_set AS conjunto,
+i.id_registration AS matricula,
+cata.fantasia AS unidade, 
+'Tag' AS empresa,
+cat.nome AS associado,
+COALESCE(v.descricao,'OUTROS') AS vendedor,
+ins.description AS status_conjunto,
+g.descricao AS grupo
+
+FROM tag.titulo_movimento tm
+	
+INNER JOIN tag.catalogo cat ON cat.pessoa = tm.pessoa
+AND cat.cnpj_cpf = tm.cnpj_cpf
+
+INNER JOIN tag.aplicacao_recurso_financeiro a ON tm.codigo_aplicacao_recurso_fin = a.codigo
+AND tm.codigo_empresa = a.codigo_empresa
+AND a.codigo IN (166,1)
+
+INNER JOIN tag.grupo_aplic_rec_financeiro g ON a.codigo_grupo = g.codigo
+AND g.codigo_empresa = a.codigo_empresa
+
+LEFT JOIN tag.invoice_item ii ON tm.id_titulo_movimento = ii.id_title_moviment
+LEFT JOIN tag.invoice i ON ii.parent = i.id
+LEFT JOIN tag.insurance_reg_set ir ON ir.id = i.id_set
+LEFT JOIN tag.insurance_registration irs ON irs.id = ir.parent
+LEFT JOIN tag.insurance_status ins ON irs.id_status = ins.id
+LEFT JOIN tag.insurance_reg_set_coverage irsc ON irsc.parent = ir.id
+
+LEFT JOIN tag.vendedor v ON v.codigo = ir.id_consultant
+LEFT JOIN tag.representante r ON r.codigo = i.id_unity
+LEFT JOIN tag.catalogo cata ON cata.cnpj_cpf = r.cnpj_cpf
+
+INNER JOIN (
+    SELECT 
+    MAX(data_lancamento) AS data_baixa,
+    SUM(valor_baixa) AS valor_baixa,
+    tb.ponteiro
+    FROM tag.titulo_movimento tb
+    INNER JOIN tag.situacao_documento stb ON stb.codigo = tb.codigo_situacao_documento
+    WHERE tb.historico NOT IN (1,5)
+    AND (tb.ponteiro_consolidado IS NULL OR tb.ponteiro_consolidado = 0 )
+    AND stb.entra_fluxo_caixa ='S'
+    AND tb.crc_cpg = 'R'
+    GROUP BY tb.ponteiro 
+) bx ON bx.ponteiro = tm.ponteiro and a.taxa_comissao > 0 AND (tm.ponteiro_consolidado IS NULL OR tm.ponteiro_consolidado = 0)
+	
+WHERE CAST(CAST(tm.data_emissao AS TIMESTAMP) AS DATE) >= date_add('year',-1,current_date)
+AND CAST(CAST(tm.data_emissao AS TIMESTAMP) AS DATE) >= DATE('2025-08-01')
+
 
