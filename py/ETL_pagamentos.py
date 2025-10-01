@@ -17,6 +17,16 @@ class ETL_relat_pagam:
         df_pagamentos = awr.athena.read_sql_query(query, database='silver')
 
         df_pagamentos = df_pagamentos.drop_duplicates(subset=['ponteiro', 'conjunto', 'matricula', 'empresa'], keep='first')
+        # a pedido do setor de COBRANÇAS, retirar associado: APROSSIL - ASSOCIACAO DE PROPRIETARIOS DE CAMINHOES DO SUL D
+        # a pedido do setor de COBRANÇAS, retirar associado: TESTE
+        
+        df_pagamentos_atual = df_pagamentos[
+            ~(
+                (df_pagamentos['empresa'].isin(['Viavante', 'Stcoop', 'Segtruck'])) &
+                (df_pagamentos['associado'] == "APROSSIL - ASSOCIACAO DE PROPRIETARIOS DE CAMINHOES DO SUL D")
+            )
+        ]
+        df_pagamentos_atual = df_pagamentos_atual[~df_pagamentos_atual['associado'].str.contains('TESTE', na=False)]
 
         caminho_pasta = r'C:\Users\raphael.almeida\OneDrive - Grupo Unus\analise de dados - Arquivos em excel\Relatório de Inadimplência'
         caminho_arquivo = os.path.join(caminho_pasta,'relatorio_pagamentos.xlsx')
@@ -27,7 +37,7 @@ class ETL_relat_pagam:
             print("Arquivo antigo removido, iniciando carregamento...")
 
 
-        df_pagamentos.to_excel(caminho_arquivo, engine = 'openpyxl', index=False, sheet_name='faturas_baixadas')
+        df_pagamentos_atual.to_excel(caminho_arquivo, engine = 'openpyxl', index=False, sheet_name='faturas_baixadas')
 
         print(f"Arquivo Excel salvo com sucesso em: {caminho_arquivo}")
 
