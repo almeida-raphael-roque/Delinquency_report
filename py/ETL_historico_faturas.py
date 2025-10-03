@@ -2,36 +2,41 @@ import pandas as pd
 import openpyxl
 import awswrangler as awr
 
+#tenho que mudar as colunas
 class ETL_hist_fat:
     def __init__(self):
         self.colunas_comuns = [
-            "matricula",
-            "conjunto",
-            "cooperativa",
+            "codigo_cadastro",
             "ponteiro",
+            "numero_documento",
             "numero_boleto",
             "nosso_numero",
-            "unidade",
-            "associado",
-            "data_vencimento",
-            "data_baixa",
+            "sequencia_documento",
+            "aplicacao_financeira",
             "valor_titulo",
             "valor_baixa",
             "data_emissao",
-            "data_atualizacao",
-            "situacao"
+            "data_baixa",
+            "data_vencimento",
+            "conjunto",
+            "matricula",
+            "unidade",
+            "empresa",
+            "associado",
+            "vendedor",
+            "status_conjunto",
+            "grupo"
         ]
         self.excel_path = r"C:\Users\raphael.almeida\Documents\Processos\relatorio_inadimplencia\historico_faturas.xlsx"
         self.excel_save_path = r"C:\Users\raphael.almeida\Documents\Processos\relatorio_inadimplencia\historico_faturas.xlsx"
-        self.query_path_inadimplentes = r"C:\Users\raphael.almeida\Documents\Processos\relatorio_inadimplencia\sql\faturas_inadimplentes.sql"
-        self.query_path_baixadas = r"C:\Users\raphael.almeida\Documents\Processos\relatorio_inadimplencia\sql\faturas_baixadas.sql"
+        self.inadimplentes_excel = r"C:\Users\raphael.almeida\OneDrive - Grupo Unus\analise de dados - Arquivos em excel\Relatório de Inadimplência\relatorio_inadimplencia.xlsx"
+        self.pagamentos_excel = r"C:\Users\raphael.almeida\OneDrive - Grupo Unus\analise de dados - Arquivos em excel\Relatório de Inadimplência\relatorio_pagamentos.xlsx"
         self.onedrive_save_path = r"C:\Users\raphael.almeida\OneDrive - Grupo Unus\analise de dados - Arquivos em excel\Relatório de Inadimplência\historico_faturas.xlsx"
 
     def carregar_base_excel(self):
         df_base = pd.read_excel(self.excel_path, engine='openpyxl')
         df_base = df_base[self.colunas_comuns]
         df_base.drop_duplicates(subset=['matricula', 'conjunto', 'cooperativa','ponteiro', 'situacao', 'data_atualizacao'], inplace=True)
-        df_base.drop_duplicates(subset=['matricula', 'conjunto', 'cooperativa','ponteiro', 'data_atualizacao'], inplace=True)
         return df_base
 
     def tratar_datas_base(self, df):
@@ -51,18 +56,14 @@ class ETL_hist_fat:
         return df
 
     def carregar_inadimplentes(self):
-        with open(self.query_path_inadimplentes, 'r') as file:
-            query = file.read()
         
-        df_inadimplentes = awr.athena.read_sql_query(query, database='silver')
-        df_inadimplentes = df_inadimplentes.drop_duplicates('ponteiro', keep='first')
-        
+        df_inadimplentes = pd.read_excel(self.inadimplentes_excel, engine='openpyxl')
         df_inadimplentes.loc[:, 'data_atualizacao'] = df_inadimplentes['data_vencimento']
         df_inadimplentes.loc[:, 'situacao'] = 'INADIMPLENTE'
         
         df_inadimplentes['data_vencimento'] = pd.to_datetime(df_inadimplentes['data_vencimento'])
-        df_inadimplentes = df_inadimplentes[df_inadimplentes['data_vencimento'] > pd.to_datetime('2025-05-31')]
-        
+        df_inadimplentes = df_inadimplentes[df_inadimplentes['data_vencimento'] > pd.to_datetime('2025-08-31')]
+       
         for col in self.colunas_comuns:
             if col not in df_inadimplentes.columns:
                 df_inadimplentes.loc[:, col] = pd.NA
@@ -70,27 +71,24 @@ class ETL_hist_fat:
         df_inadimplentes = df_inadimplentes[self.colunas_comuns]
         return df_inadimplentes
 
-    def carregar_pagamentos(self, df_inadimplentes_lista):
-        with open(self.query_path_baixadas, 'r') as file:
-            query = file.read()
-        
-        df_pagamentos = awr.athena.read_sql_query(query, database='silver')
+    def carregar_pagamentos(self):
+
+        df_pagamentos = pd.read_excel(self.pagamentos_excel, engine='openpyxl')
+        df_pagamentos.loc[:, 'data_atualizacao'] = df_pagamentos['data_vencimento']
+        df_pagamentos.loc[:, 'situacao'] = 'PAGO'
         
         for col in self.colunas_comuns:
             if col not in df_pagamentos.columns:
                 df_pagamentos.loc[:, col] = pd.NA
         
         df_pagamentos = df_pagamentos[self.colunas_comuns]
-        df_pagamentos.loc[:, 'data_atualizacao'] = df_pagamentos['data_baixa']
-        df_pagamentos.loc[:, 'situacao'] = 'PAGO'
         
         df_pagamentos['data_baixa'] = pd.to_datetime(df_pagamentos['data_baixa'])
         df_pagamentos['data_vencimento'] = pd.to_datetime(df_pagamentos['data_vencimento'])
         
-        df_pagamentos = df_pagamentos.drop_duplicates('ponteiro', keep='first')
         df_pagamentos = df_pagamentos[
-            (df_pagamentos['data_baixa'] > pd.to_datetime('2025-05-31')) &
-            (df_pagamentos['data_vencimento'] > pd.to_datetime('2025-05-31'))
+            (df_pagamentos['data_baixa'] > pd.to_datetime('2025-08-31')) &
+            (df_pagamentos['data_vencimento'] > pd.to_datetime('2025-08-31'))
         ]
         
         return df_pagamentos[df_pagamentos['ponteiro'].isin(df_inadimplentes_lista)]
