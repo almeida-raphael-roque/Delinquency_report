@@ -18,25 +18,29 @@ class ETL_hist_fat:
             "data_emissao",
             "data_baixa",
             "data_vencimento",
+            "data_atualizacao",
             "conjunto",
             "matricula",
             "unidade",
+            "cooperativa",
             "empresa",
             "associado",
             "vendedor",
             "status_conjunto",
-            "grupo"
+            "grupo",
+            "situacao"
         ]
         self.excel_path = r"C:\Users\raphael.almeida\Documents\Processos\relatorio_inadimplencia\historico_faturas.xlsx"
-        self.excel_save_path = r"C:\Users\raphael.almeida\Documents\Processos\relatorio_inadimplencia\historico_faturas.xlsx"
         self.inadimplentes_excel = r"C:\Users\raphael.almeida\OneDrive - Grupo Unus\analise de dados - Arquivos em excel\Relatório de Inadimplência\relatorio_inadimplencia.xlsx"
         self.pagamentos_excel = r"C:\Users\raphael.almeida\OneDrive - Grupo Unus\analise de dados - Arquivos em excel\Relatório de Inadimplência\relatorio_pagamentos.xlsx"
         self.onedrive_save_path = r"C:\Users\raphael.almeida\OneDrive - Grupo Unus\analise de dados - Arquivos em excel\Relatório de Inadimplência\historico_faturas.xlsx"
 
     def carregar_base_excel(self):
         df_base = pd.read_excel(self.excel_path, engine='openpyxl')
-        df_base = df_base[self.colunas_comuns]
-        df_base.drop_duplicates(subset=['matricula', 'conjunto', 'cooperativa','ponteiro', 'situacao', 'data_atualizacao'], inplace=True)
+
+        # Garantir todas as colunas necessárias; preenche ausentes com NA sem erro em DF vazio
+        df_base = df_base.reindex(columns=self.colunas_comuns, fill_value=pd.NA)
+        df_base.drop_duplicates(subset=['matricula', 'conjunto', 'cooperativa', 'ponteiro', 'situacao', 'data_atualizacao'], inplace=True)
         return df_base
 
     def tratar_datas_base(self, df):
@@ -64,24 +68,18 @@ class ETL_hist_fat:
         df_inadimplentes['data_vencimento'] = pd.to_datetime(df_inadimplentes['data_vencimento'])
         df_inadimplentes = df_inadimplentes[df_inadimplentes['data_vencimento'] > pd.to_datetime('2025-08-31')]
        
-        for col in self.colunas_comuns:
-            if col not in df_inadimplentes.columns:
-                df_inadimplentes.loc[:, col] = pd.NA
-        
-        df_inadimplentes = df_inadimplentes[self.colunas_comuns]
+        # Garantir todas as colunas necessárias; preenche ausentes com NA sem erro em DF vazio
+        df_inadimplentes = df_inadimplentes.reindex(columns=self.colunas_comuns, fill_value=pd.NA)
         return df_inadimplentes
 
-    def carregar_pagamentos(self):
+    def carregar_pagamentos(self, df_inadimplentes_mascara):
 
         df_pagamentos = pd.read_excel(self.pagamentos_excel, engine='openpyxl')
-        df_pagamentos.loc[:, 'data_atualizacao'] = df_pagamentos['data_vencimento']
+        df_pagamentos.loc[:, 'data_atualizacao'] = df_pagamentos['data_baixa']
         df_pagamentos.loc[:, 'situacao'] = 'PAGO'
         
-        for col in self.colunas_comuns:
-            if col not in df_pagamentos.columns:
-                df_pagamentos.loc[:, col] = pd.NA
-        
-        df_pagamentos = df_pagamentos[self.colunas_comuns]
+        # Garantir todas as colunas necessárias; preenche ausentes com NA sem erro em DF vazio
+        df_pagamentos = df_pagamentos.reindex(columns=self.colunas_comuns, fill_value=pd.NA)
         
         df_pagamentos['data_baixa'] = pd.to_datetime(df_pagamentos['data_baixa'])
         df_pagamentos['data_vencimento'] = pd.to_datetime(df_pagamentos['data_vencimento'])
@@ -91,7 +89,8 @@ class ETL_hist_fat:
             (df_pagamentos['data_vencimento'] > pd.to_datetime('2025-08-31'))
         ]
         
-        return df_pagamentos[df_pagamentos['ponteiro'].isin(df_inadimplentes_lista)]
+        return df_pagamentos[df_pagamentos[['ponteiro', 'conjunto', 'matricula', 'empresa']].apply(tuple, axis=1).isin(df_inadimplentes_mascara)]
+        
 
     def processar_dados(self):
         # Carregar e tratar base inicial
@@ -106,13 +105,14 @@ class ETL_hist_fat:
         df_composto_inadimplentes = pd.concat([df_base, df_inadimplentes])
         df_composto_inadimplentes = df_composto_inadimplentes.drop_duplicates(keep='first')
         
-        # Criar lista de inadimplentes
-        df_inadimplentes_lista = df_composto_inadimplentes.loc[
-            df_composto_inadimplentes['data_vencimento'].notna(), 'ponteiro'
-        ].to_list()
+        # Criar conjunto máscara com ponteiro, conjunto, matricula e empresa
+        df_inadimplentes_mascara = [
+            tuple(row) for row in df_composto_inadimplentes[['ponteiro', 'conjunto', 'matricula', 'empresa']].values
+        ]
+
         
         # Carregar pagamentos
-        df_pagamentos_inadimplencia = self.carregar_pagamentos(df_inadimplentes_lista)
+        df_pagamentos_inadimplencia = self.carregar_pagamentos(df_inadimplentes_mascara)
         
         # Combinar todas as bases
         df_atualizado = pd.concat([df_composto_inadimplentes, df_pagamentos_inadimplencia])
@@ -120,10 +120,7 @@ class ETL_hist_fat:
             subset=['matricula', 'conjunto', 'cooperativa', 'ponteiro', 'situacao', 'data_atualizacao'],
             inplace=True
         )
-        df_atualizado.drop_duplicates(
-            subset=['matricula', 'conjunto', 'cooperativa', 'ponteiro', 'data_atualizacao'],
-            inplace=True
-        )
+
         
         # Tratar datas e colunas nulas do resultado final
         df_atualizado = self.tratar_datas_base(df_atualizado)
@@ -140,20 +137,20 @@ class ETL_hist_fat:
             subset=['matricula', 'conjunto', 'cooperativa', 'ponteiro', 'situacao', 'data_atualizacao'],
             inplace=True
         )
-        df_atualizado.drop_duplicates(
-            subset=['matricula', 'conjunto', 'cooperativa', 'ponteiro', 'data_atualizacao'],
-            inplace=True
-        )
         
         return df_atualizado
 
     def salvar_resultado(self, df):
-        df.to_excel(self.excel_save_path, engine='openpyxl', index=False, sheet_name='historico_faturas')
+        df.to_excel(self.excel_path, engine='openpyxl', index=False, sheet_name='historico_faturas')
         df.to_excel(self.onedrive_save_path, engine='openpyxl', index=False, sheet_name='historico_faturas')
         return len(df)
 
+    @classmethod
+    def ETL_hist_fat(cls):
+        etl = cls()
+        df_final = etl.processar_dados()
+        total_registros = etl.salvar_resultado(df_final)
+        print(f"Total de registros processados: {total_registros}")
+
 if __name__ == '__main__':
-    etl = ETL_hist_fat()
-    df_final = etl.processar_dados()
-    total_registros = etl.salvar_resultado(df_final)
-    print(f"Total de registros processados: {total_registros}")
+    ETL_hist_fat.ETL_hist_fat()

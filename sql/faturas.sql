@@ -17,6 +17,9 @@ i.id_registration AS matricula,
 cata.fantasia AS unidade, 
 'Segtruck' AS empresa,
 cat.nome AS associado,
+en.fone1 AS telefone,
+en.fone2 AS telefone_2,
+en.e_mail AS e_mail,
 COALESCE(v.descricao,'OUTROS') AS vendedor,
 ins.description AS status_conjunto,
 g.descricao AS grupo
@@ -25,6 +28,8 @@ FROM silver.titulo_movimento tm
 	
 INNER JOIN silver.catalogo cat ON cat.pessoa = tm.pessoa
 AND cat.cnpj_cpf = tm.cnpj_cpf
+
+LEFT JOIN silver.endereco en ON en.cnpj_cpf = cat.cnpj_cpf
 
 INNER JOIN silver.aplicacao_recurso_financeiro a ON tm.codigo_aplicacao_recurso_fin = a.codigo
 AND tm.codigo_empresa = a.codigo_empresa
@@ -73,6 +78,9 @@ i.id_registration AS matricula,
 cata.fantasia AS unidade, 
 'Stcoop' AS empresa,
 cat.nome AS associado,
+en.fone1 AS telefone,
+en.fone2 AS telefone_2,
+en.e_mail AS e_mail,
 COALESCE(v.descricao,'OUTROS') AS vendedor,
 ins.description AS status_conjunto,
 g.descricao AS grupo
@@ -81,6 +89,8 @@ FROM stcoop.titulo_movimento tm
 	
 INNER JOIN stcoop.catalogo cat ON cat.pessoa = tm.pessoa
 AND cat.cnpj_cpf = tm.cnpj_cpf
+
+LEFT JOIN stcoop.endereco en ON en.cnpj_cpf = cat.cnpj_cpf
 
 INNER JOIN stcoop.aplicacao_recurso_financeiro a ON tm.codigo_aplicacao_recurso_fin = a.codigo
 AND tm.codigo_empresa = a.codigo_empresa
@@ -128,6 +138,9 @@ i.id_registration AS matricula,
 cata.fantasia AS unidade, 
 'Viavante' AS empresa,
 cat.nome AS associado,
+en.fone1 AS telefone,
+en.fone2 AS telefone_2,
+en.e_mail AS e_mail,
 COALESCE(v.descricao,'OUTROS') AS vendedor,
 ins.description AS status_conjunto,
 g.descricao AS grupo
@@ -136,6 +149,8 @@ FROM viavante.titulo_movimento tm
 	
 INNER JOIN viavante.catalogo cat ON cat.pessoa = tm.pessoa
 AND cat.cnpj_cpf = tm.cnpj_cpf
+
+LEFT JOIN viavante.endereco en ON en.cnpj_cpf = cat.cnpj_cpf
 
 INNER JOIN viavante.aplicacao_recurso_financeiro a ON tm.codigo_aplicacao_recurso_fin = a.codigo
 AND tm.codigo_empresa = a.codigo_empresa
@@ -182,6 +197,9 @@ i.id_registration AS matricula,
 cata.fantasia AS unidade, 
 'Tag' AS empresa,
 cat.nome AS associado,
+en.fone1 AS telefone,
+en.fone2 AS telefone_2,
+en.e_mail AS e_mail,
 COALESCE(v.descricao,'OUTROS') AS vendedor,
 ins.description AS status_conjunto,
 g.descricao AS grupo
@@ -190,6 +208,8 @@ FROM tag.titulo_movimento tm
 	
 INNER JOIN tag.catalogo cat ON cat.pessoa = tm.pessoa
 AND cat.cnpj_cpf = tm.cnpj_cpf
+
+LEFT JOIN tag.endereco en ON en.cnpj_cpf = cat.cnpj_cpf
 
 INNER JOIN tag.aplicacao_recurso_financeiro a ON tm.codigo_aplicacao_recurso_fin = a.codigo
 AND tm.codigo_empresa = a.codigo_empresa

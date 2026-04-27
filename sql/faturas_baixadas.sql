@@ -50,7 +50,7 @@ INNER JOIN (
     SUM(valor_baixa) AS valor_baixa,
     tb.ponteiro
     FROM silver.titulo_movimento tb
-    INNER JOIN silver.situacao_documento stb ON stb.codigo = tb.codigo_situacao_documento
+    INNER JOIN silver.situacao_documento stb ON CAST(stb.codigo AS BIGINT) = tb.codigo_situacao_documento
     WHERE tb.historico NOT IN (1,5)
     AND (tb.ponteiro_consolidado IS NULL OR tb.ponteiro_consolidado = 0 )
     AND stb.entra_fluxo_caixa ='S'
